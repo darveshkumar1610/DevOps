@@ -8,7 +8,8 @@ This respository is basically for all the DevOps technologies
     Add java path "PATH=$PATH:$HOME/bin:$JAVA_HOME" to .bash_profile.
     Run "echo $JAVA_HOME" to verify the java path.
 3. To download and install jenkins for CentOS follow the commands on https://pkg.jenkins.io/redhat-stable/ 
-4. Start and enable jenkins service.
+4. Update the hostname as Jenkins by running command "hostname jenkins" then exit and relogin.
+5. Start and enable jenkins service.
     systemctl status jenkins
     systemctl start jenkins
     systemctl enable jenkins
@@ -26,3 +27,12 @@ This respository is basically for all the DevOps technologies
 # Create a new Job and validate Jenkins installation
     Jenkins > New Item > My_First_Jenkins_Job > Build (Add build step as Execute Shell as we are using Linux) > Enter "Hello Jenkins" > Apply > Save
     Jenkins > Build Now
+
+# Install GIT on Jenkins Server
+    yum install -y git
+
+# Install GIT binaries and dependencies on jenkins
+Jenkins > Manage Jenkins > Manage Plugins > Available (search for github) > Select Github and Click on "Install without restart"
+    
+# Configure GIT for Jenkins
+    Jenkins > Manage Jenkins > Global Tool Configuration > Git > Add JDK (Name:git, Path to Git executable=/usr/bin/git) > Apply > Save
