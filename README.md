@@ -5,10 +5,12 @@ This respository is basically for all the DevOps technologies
 1. Open the inbound port 8080 as Jenkins listens on 8080 port.
 2. Check if java installed "java -version", if not then install using "yum install java-1.8*" command.
     Get the java location using "$(dirname $(dirname $(readlink -f $(which javac))))" command.
-    Add java path "PATH=$PATH:$HOME/bin:$JAVA_HOME" to .bash_profile.
+    Add JAVA_HOME and java path to .bash_profile.
+        JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.312.b07-1.el7_9.x86_64
+        PATH=$PATH:$HOME/bin:$JAVA_HOME
     Run "echo $JAVA_HOME" to verify the java path.
 3. To download and install jenkins for CentOS follow the commands on https://pkg.jenkins.io/redhat-stable/ 
-4. Update the hostname as Jenkins by running command "hostname jenkins" then exit and relogin.
+4. Update the hostname  as Jenkins(If not jenkins) by running command "hostname jenkins" then exit and relogin.
 5. Start and enable jenkins service.
     systemctl status jenkins
     systemctl start jenkins
@@ -25,7 +27,7 @@ This respository is basically for all the DevOps technologies
     Jenkins > Manage Jenkins > Global Tool Configuration > JDK > Add JDK (Name:JAVA_HOME, JAVA_HOME=Java location from step 2) > Apply > Save
 
 # Create a new Job and validate Jenkins installation
-    Jenkins > New Item > My_First_Jenkins_Job > Build (Add build step as Execute Shell as we are using Linux) > Enter "Hello Jenkins" > Apply > Save
+    Jenkins > New Item > My_First_Jenkins_Job > Build (Add build step as Execute Shell as we are using Linux) > Enter echo "Hello Jenkins" > Apply > Save
     Jenkins > Build Now
 
 # Install GIT on Jenkins Server
@@ -42,6 +44,7 @@ Jenkins > Manage Jenkins > Manage Plugins > Available (search for github) > Sele
     wget https://dlcdn.apache.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz
     tar -xzf apache-maven-3.8.4-bin.tar.gz -C /opt/maven
     cd /opt/maven
+    mv /opt/maven/apache-maven-3.8.4/* /opt/maven
     
     vi ~/.bash_profile
     M2_HOME=/opt/maven
@@ -50,7 +53,7 @@ Jenkins > Manage Jenkins > Manage Plugins > Available (search for github) > Sele
     
     echo $M2
     echo $M2_HOME
-    maven --version
+    mvn --version
     
 # Install MAVEN binaries and dependencies on jenkins
 Jenkins > Manage Jenkins > Manage Plugins > Available (search for maven) > Select Maven Integration, Maven Invoker > Click on "Install without restart"
