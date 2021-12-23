@@ -36,3 +36,29 @@ Jenkins > Manage Jenkins > Manage Plugins > Available (search for github) > Sele
     
 # Configure GIT for Jenkins
     Jenkins > Manage Jenkins > Global Tool Configuration > Git > Add JDK (Name:git, Path to Git executable=/usr/bin/git) > Apply > Save
+
+# Download and install Maven on Jenkins host
+    mkdir -p /opt/maven
+    wget https://dlcdn.apache.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz
+    tar -xzf apache-maven-3.8.4-bin.tar.gz -C /opt/maven
+    cd /opt/maven
+    
+    vi ~/.bash_profile
+    M2_HOME=/opt/maven
+    M2=/opt/maven/bin
+    PATH=$PATH:$HOME/bin:$JAVA_HOME:$M2_HOME:$M2
+    
+    echo $M2
+    echo $M2_HOME
+    maven --version
+    
+# Install MAVEN binaries and dependencies on jenkins
+Jenkins > Manage Jenkins > Manage Plugins > Available (search for maven) > Select Maven Integration, Maven Invoker > Click on "Install without restart"
+    
+# Configure MAVEN for Jenkins
+    Jenkins > Manage Jenkins > Global Tool Configuration > Maven > Add Maven (Name:M2_HOME, MAVEN_HOME=/opt/maven) > Apply > Save
+    
+Now if we will create a new job in Jenkins, it will show Maven Project as well to choose.
+We have build environment for CI/CD pipeline.
+   
+Using Ansible, we can scrpts in Playbook which will fetch the artifacts and will generate a docker file, push it to docker hub and using that image, it will create a docker container in kubernetes.
