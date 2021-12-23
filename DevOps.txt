@@ -1,0 +1,119 @@
+We will be installing docker on Linux host and tomcat as a docker container. 
+Install Ansible to create image on the basis of docker file and it will be pushed to docker Hub and ansible will invoke k8s to install kubernetes and deploy dockerfiles.
+
+Create a Linux Instance and install docker on it.
+	systemctl start docker
+	docker ps
+	docker image ls
+	docker pull tomcat:latest
+	docker image ls
+	docker run -d --name tomcat -p 8080:8080 tomcat:latest
+	docker ps
+	docker exec -it tomcat /bin/bash
+	cd /usr/local/tomcat/webapps
+	cp -R ../webapps.dist* .
+	
+Open tomcat URL in browser with docker-host-IP:8080
+We can create another tomcat-container on port 8081. Both containers will run simultaneously.
+
+Install Publish-over-SSH plugin on Jenkins.
+Login to Docker-host.
+# useradd dockeradmin
+# passwd dockeradmin
+# usermod -aG docker dockeradmin
+# id dockeradmin
+# vi /etc/ssh/sshd_config
+PasswordAuthentication yes
+# systemctl restart sshd
+
+Now go to Jenkins > Manage Jenkins > Configure System > Publish-over-SSH (SSH Servers > Add) - Name:docker-host, Hostname: Private-IP, Username:dockeradmin > Click on Advanced to provide the password > Test Configuration > Apply > Save
+
+Create a new job with Post Steps: Send Build artifacts over SSH > Select docker-host,Source Files: webapp/target/*.war,Remove Prefix:webapp/target, Remote Directory: . > Apply > Save
+
+Login to docker-host using dockeradmin user to verify the files (webapp.war) pushed by Jenkins. But we want this file in docker container.
+
+# vi Dockerfile
+FROM tomcat:latest
+COPY ./webapp.war /usr/local/tomcat/webapps
+
+docker build -t docker-project .
+docker images
+docker run -d --name docker-container -p 8080:8080 docker-project
+docker ps
+
+Open the Public-IP:8080 in web browser to verify the docker container tomcat installation.
+
+docker stop docker-container
+docker ps 
+docker ps -a
+docker rm docker-container
+docker ps -a
+docker images
+docker rmi docker-project
+docker images
+
+rm -rf webapp.war
+
+Now in the new job just add in SSH Server section in Exec command as below > Apply > Save 
+cd /home/dockeradmin; 
+docker build -t devops-tomcat-image .;
+docker run -d --name devops-tomcat-container -p 8080:8080 devops-tomcat-image
+
+Once jenkin job finished.
+docker images
+docker ps
+
+Open the Public-IP:8080 in web browser to verify the docker container tomcat installation.
+Now what if github code get change/update and it want to deploy same container, it will give error (FINISHED: UNSTABLE) as we already have a container with same name. So Jenkins works well for CI part but not with CD in CI/CD pipeline. Another scenario, if we have multiple servers, we need to integrate all those servers with Jenkins which is a tedious job. For which we can use Ansible for the CD part in CI/CD pipeline.
+
+    GIT > Jenkins > Ansible > Docker/K8s
+	
+Make sure we have docker running on docker-host. Create same user as ansible host.
+# useradd ansibleadmin
+# passwd ansibleadmin
+
+Create a new Ansible VM, Login to ansible host and install ansible. Python is pre-requisities for Ansible.
+# yum install python
+# python --version 
+# yum install python-pip -y
+# pip install ansible
+# ansible --version
+# mkdir /etc/ansible /top/docker
+# chown -R ansibleadmin:ansibleadmin /opt/docker
+# useradd ansibleadmin
+# passwd ansibleadmin
+# usermod -aG docker ansibleadmin
+
+# visudo
+# %wheel 	ALL=(ALL) 	NOPASSWD: ALL
+
+# yum install docker -y
+# systemctl status docker
+# systemctl start docker
+
+# vi /etc/ssh/sshd_config
+PasswordAuthentication yes
+# systemctl restart sshd
+
+# su - ansibleadmin
+# ssh-keygen
+# ls .ssh
+# ssh-copy-id localhost
+# ssh-copy-id ansibleadmin@<private-ip-docker-host>
+# ssh ansibleadmin@<private-ip-docker-host>
+
+Make sure you have inventory file updated.
+# ansible all -m ping
+
+Now go to Jenkins > Manage jenkins > Configure System > Publish-over-SSH Section > Add a new server (Name: ansible-server, Hostname: private-ip-ansible-host, Username: ansibleadmin, Click on Advanced and Use password authentication >  Provide Passphrase/Password) > Test Configuration > Apply > Save
+
+create a new job (deploy-container-using-ansible) with below configuration > apply > save.
+Source Files: webapp/target/*.war
+Remove Prefix: webapp/target
+Update Remote Directory: //opt//docker
+Remove everything from Exec command section.
+
+Build Now for the new job.
+
+Next we will write ansible playbook which will create docker file and docker file will create docker image.
+Using ansible, we will push the image to docker hub and that image will be used to create container on docker host using ansible.
