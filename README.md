@@ -16,3 +16,13 @@ This respository is basically for all the DevOps technologies
     "cat /var/lib/jenkins/secrets/initialAdminPassword"
 7. Open <Jenkins-public-IP>:8080 in the browser. Copy the password from step 5 and paste in browser window to login to jenkins.
     Select Customize jenkins (Install suggested plugins OR Select Plugins to Install). We can skip this and start using jenkins directly.
+
+# Change Jenkins user password
+    Go to Admin > Configure > Password
+
+# Configure JAVA for Jenkins
+    Jenkins > Manage Jenkins > Global Tool Configuration > JDK > Add JDK (Name:JAVA_HOME, JAVA_HOME=Java location from step 2) > Apply > Save
+
+# Create a new Job and validate Jenkins installation
+    Jenkins > New Item > My_First_Jenkins_Job > Build (Add build step as Execute Shell as we are using Linux) > Enter "Hello Jenkins" > Apply > Save
+    Build Now
