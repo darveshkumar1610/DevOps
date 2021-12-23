@@ -12,6 +12,6 @@ This respository is basically for all the DevOps technologies
     systemctl start jenkins
     systemctl enable jenkins
 5. Run below command to get the initialAdminPassword.
-    # cat /var/lib/jenkins/secrets/initialAdminPassword
+    "cat /var/lib/jenkins/secrets/initialAdminPassword"
 6. Open <Jenkins-public-IP>:8080 in the browser. Copy the password from step 5 and paste in browser window to login to jenkins.
    Select Customize jenkins (Install suggested plugins OR Select Plugins to Install). We can skip this and start using jenkins directly.
