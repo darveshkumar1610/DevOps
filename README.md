@@ -65,3 +65,40 @@ Now if we will create a new job in Jenkins, it will show Maven Project as well t
 We have build environment for CI/CD pipeline.
    
 Using Ansible, we can scrpts in Playbook which will fetch the artifacts and will generate a docker file, push it to docker hub and using that image, it will create a docker container in kubernetes.
+
+# Create Maven Project using git url https://github.com/jhawithu/hello-world.git
+
+============================================================================================================================
+# Create a new VM  for Tomcat Server 
+# Install Java on Tomcat VM
+    yum install -y java-1.8*
+        Get the java location using "$(dirname $(dirname $(readlink -f $(which javac))))" command.
+    Add JAVA_HOME and java path to .bash_profile.
+        JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.312.b07-1.el7_9.x86_64
+        PATH=$PATH:$HOME/bin:$JAVA_HOME
+    Run "echo $JAVA_HOME" to verify the java path.
+
+# Install Tomcat 9 on VM.
+    hostname tomcat
+    mkdir -p /opt/tomcat
+    wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.56/bin/apache-tomcat-9.0.56.tar.gz
+    tar -xzf apache-tomcat-9.0.56.tar.gz
+    mv apache-tomcat-9.0.56 /opt/tomcat/
+    cd /opt/tomcat/bin
+    ./startup.sh
+    
+Verify the Tomcat installation and startup by opening <tomcat-public-ip>:8080 in the browser.
+    Click on manager App, it will show the permission denied because usually tomcat server should be accessed from the same machine but we are accessing it from different machine. So we need to update context.xml file on command line. We can find the context.xml files.
+    Comment the Value Class name entries by adding <!-- in front and --> in the end of the line in /opt/tomcat/webapps/manager & host-manager/META-INF/conext.xml files.
+    
+Now access the Web URL again and click on Manager App. It will ask for login username and password. As we do not have those details, we need to modify some details in /opt/tomcat/conf/tomcat-users.xml file.Then we can use tomcat/tomcat details to login to Manager App.
+    
+Login to Jenkins and install "Deploy to Container" plugin.
+Create a new job.
+    Source Code Management: Git => Provide git URL https://github.com/jhawithu/hello-world.git
+    Branches to build: */main
+    Root POM: pom.xml
+    Goals and options: clean install package
+    Post Steps: Deploy war/ear to a container
+
+    Once the job will be build it will create webapp and webapp.war files under /opt/tomcat/webapps directory. Now we can check the output at <tomcat-url>:8080/webapp in the browser.
