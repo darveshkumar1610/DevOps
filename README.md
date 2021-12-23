@@ -25,4 +25,4 @@ This respository is basically for all the DevOps technologies
 
 # Create a new Job and validate Jenkins installation
     Jenkins > New Item > My_First_Jenkins_Job > Build (Add build step as Execute Shell as we are using Linux) > Enter "Hello Jenkins" > Apply > Save
-    Build Now
+    Jenkins > Build Now
