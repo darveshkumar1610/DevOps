@@ -1,0 +1,39 @@
+git init .
+git remote add origin <http-link-repository>
+git remote -v
+git add .
+git commit -m "Initial Commit"
+git push origin master
+git remote remove origin
+git remote add origin https://<auth-token>@github.com/<user>/<repository>
+git push origin master
+
+mkdir .github
+cd .github
+mkdir workflows
+cd workflows
+
+Create auth-token for repository and workflows to access the workflows which contains YAML files to use Github actions.
+
+# First GitHub Action
+name: My First GitHub Action
+on: [push]
+jobs:
+  print-hello-world:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "hello world!!!!"
+
+GitHub actions do not guarantee run the Workflow YAML objects in sequence but the list/array of jobs will run in sequence.
+
+# GitHub Actions Checkout Repository
+name: My First GitHub Action
+on: [push]
+jobs:
+  print-hello-world:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - run: tree
+
